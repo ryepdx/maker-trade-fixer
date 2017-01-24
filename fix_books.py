@@ -6,6 +6,9 @@ from operator import itemgetter
 
 precision = 1000000000000000000
 
+mkr_addr = "0xc66ea802717bfb9833400264dd12c2bceaa34a6d"
+weth_addr = "0xC66eA802717bFb9833400264Dd12c2bCeAa34a6d"
+
 web3rpc = Web3(RPCProvider())
 
 web3rpc.eth.defaultAccount = "0xb19b144df98dc6cf672ec405d6c0816511cfa37f"
@@ -14,22 +17,27 @@ web3rpc.eth.defaultBlock = "latest"
 
 with open('simple_market.abi', 'r') as abi_file:
   abi_json = abi_file.read().replace('\n','')
-
 abi = json.loads(abi_json)
+market_contract = web3rpc.eth.contract(abi, address="0xa1B5eEdc73a978d181d1eA322ba20f0474Bb2A25")
 
-#repston
-#contract = web3rpc.eth.contract(abi, address="0x0bC603C1e35e0A7C16623230b2C10cA1668cb0C8")
+with open('erc20.abi', 'r') as abi_file:
+  abi_json = abi_file.read().replace('\n','')
+abi = json.loads(abi_json)
+weth_contract = web3rpc.eth.contract(abi, address="0xECF8F87f810EcF450940c9f60066b4a7a501d6A7")
+mkr_contract = web3rpc.eth.contract(abi, address="0xC66eA802717bFb9833400264Dd12c2bCeAa34a6d")
 
-#live
-contract = web3rpc.eth.contract(abi, address="0xa1B5eEdc73a978d181d1eA322ba20f0474Bb2A25")
+weth_balance = float(weth_contract.call().balanceOf("0x6E39564ecFD4B5b0bA36CD944a46bCA6063cACE5"))/precision
+mkr_balance  = float(mkr_contract.call().balanceOf("0x6E39564ecFD4B5b0bA36CD944a46bCA6063cACE5"))/precision
 
-last_offer_id = contract.call().last_offer_id()
+print("Balance available to the fixer: %0.5f ETH - %0.5f MKR\n" % (weth_balance, mkr_balance))
+
+last_offer_id = market_contract.call().last_offer_id()
 
 id = 0
 offers = []
 
 while id <  last_offer_id + 1:
-  offers.append(contract.call().offers(id))
+  offers.append(market_contract.call().offers(id))
   id = id + 1
 
 id=0
@@ -70,17 +78,20 @@ for offer in offers:
 buy_orders.sort(key=itemgetter(2), reverse=True)
 bid = float(buy_orders[0][2])
 bq  = float(buy_orders[0][1]) 
-print ("Biding for %0.5f MKR @ %0.5f ETH/MKR" % (bq,bid))
+print ("Highest bid is for %0.5f MKR @ %0.5f ETH/MKR" % (bq,bid))
 
 sell_orders.sort(key=itemgetter(2), reverse=False)
 ask = float(sell_orders[0][2])
 aq  = float(sell_orders[0][1]) 
-print ("Asking for %0.5f MKR @ %0.5f ETH/MKR" % (aq,ask))
+print ("Lowest ask is for %0.5f MKR @ %0.5f ETH/MKR" % (aq,ask))
 
 if bid >= ask:
+  print("\nAction needed!")
   if bq > aq:
-    print ("Buy from Sell book and sell to Buy book")
+    print ("Buy from Ask book and sell to Bid book")
   else:
-    print ("Buy from Buy book and sell to Sell book")
+    print ("Buy from Bid book and sell to Ask book")
+    if mkr_balance < bq:
+      market_contract.call().Trade(mkr_balance, mkr_addr, bq*mkr_balance, weth_addr)
 else:
  print ("All is well")
