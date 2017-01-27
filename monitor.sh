@@ -1,4 +1,4 @@
 while [ true ] ; do
   ./fix_books.py
-  sleep 5
+  sleep 60
 done
