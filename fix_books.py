@@ -80,7 +80,7 @@ buy_orders.sort(key=itemgetter(2), reverse=True)
 bid_id = float(buy_orders[0][0])
 bid    = float(buy_orders[0][2])
 bid_qty     = float(buy_orders[0][1]) 
-print ("Highest bid is for %0.5f MKR @ %0.5f ETH/MKR" % (bq,bid))
+print ("Highest bid is for %0.5f MKR @ %0.5f ETH/MKR" % (bid_qty,bid))
 
 sell_orders.sort(key=itemgetter(2), reverse=False)
 ask_id = float(buy_orders[0][0])
@@ -93,7 +93,7 @@ result = market_contract.call().buy(int(bid_id), web3rpc.toWei(0.01, 'Ether'))
 if bid >= ask:
   print("\nAction needed!")
   if bid_qty > ask_qty:
-    if weth_balance < 1
+    if weth_balance < 1:
       print ("Not enough ETH!")
     else:
       print ("Buy from Ask book and sell to Bid book")
