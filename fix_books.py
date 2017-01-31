@@ -12,7 +12,7 @@ geth_addr = "0xa74476443119A942dE498590Fe1f2454d7D4aC0d"
 
 web3rpc = Web3(RPCProvider())
 
-web3rpc.eth.defaultAccount = "0xb19b144df98dc6cf672ec405d6c0816511cfa37f"
+web3rpc.eth.defaultAccount = "0x6E39564ecFD4B5b0bA36CD944a46bCA6063cACE5"
 web3rpc.eth.defaultBlock = "latest"
 # Can also be an integer or one of "latest", "pending", "earliest"
 
@@ -79,19 +79,25 @@ for offer in offers:
 buy_orders.sort(key=itemgetter(2), reverse=True)
 bid_id = float(buy_orders[0][0])
 bid    = float(buy_orders[0][2])
-bq     = float(buy_orders[0][1]) 
+bid_qty     = float(buy_orders[0][1]) 
 print ("Highest bid is for %0.5f MKR @ %0.5f ETH/MKR" % (bq,bid))
 
 sell_orders.sort(key=itemgetter(2), reverse=False)
 ask_id = float(buy_orders[0][0])
 ask = float(sell_orders[0][2])
-aq  = float(sell_orders[0][1]) 
+ask_qty  = float(sell_orders[0][1]) 
 print ("Lowest ask is for %0.5f MKR @ %0.5f ETH/MKR" % (aq,ask))
 
+result = market_contract.call().buy(int(bid_id), web3rpc.toWei(0.01, 'Ether'))
+
 if bid >= ask:
-  print("\nAction needed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-  if bq > aq:
-    print ("Buy from Ask book and sell to Bid book")
+  print("\nAction needed!")
+  if bid_qty > ask_qty:
+    if weth_balance < 1
+      print ("Not enough ETH!")
+    else:
+      print ("Buy from Ask book and sell to Bid book")
+      # Do stuff
   else:
     if mkr_balance < 0.1:
       print ("Not enough MKR!")
