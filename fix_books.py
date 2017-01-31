@@ -86,7 +86,7 @@ sell_orders.sort(key=itemgetter(2), reverse=False)
 ask_id = float(buy_orders[0][0])
 ask = float(sell_orders[0][2])
 ask_qty  = float(sell_orders[0][1]) 
-print ("Lowest ask is for %0.5f MKR @ %0.5f ETH/MKR" % (aq,ask))
+print ("Lowest ask is for %0.5f MKR @ %0.5f ETH/MKR" % (ask_qty,ask))
 
 result = market_contract.call().buy(int(bid_id), web3rpc.toWei(0.01, 'Ether'))
 
