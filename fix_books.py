@@ -105,10 +105,7 @@ if bid >= ask:
         bid_id = int(bid_id)
         quantity = int(0.2*precision)
         print("Sell: [%i] %i MKR" % (bid_id, quantity))
-        try:
-          result = market_contract.call().buy(bid_id, quantity)
-          print("%s" % result)
-        except BadFunctionCallOutput:
-          print("Contract appears to have thrown an exception.", file=sys.stderr)
+        result = market_contract.transact().buy(bid_id, quantity)
+        print("%s" % result)
 else:
  print ("All is well")
