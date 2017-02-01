@@ -1,7 +1,8 @@
 #! /usr/bin/python3
 
-import json
+import json, sys
 from web3 import Web3, RPCProvider
+from web3.exceptions import BadFunctionCallOutput
 from operator import itemgetter
 
 precision = 1000000000000000000
@@ -31,7 +32,6 @@ weth_balance = float(weth_contract.call().balanceOf("0x6E39564ecFD4B5b0bA36CD944
 mkr_balance  = float(mkr_contract.call().balanceOf("0x6E39564ecFD4B5b0bA36CD944a46bCA6063cACE5"))/precision
 
 print("\nBalance available to the fixer:                                                   %0.5f ETH - %0.5f MKR\n" % (weth_balance, mkr_balance))
-
 last_offer_id = market_contract.call().last_offer_id()
 
 id = 0
@@ -88,8 +88,6 @@ ask = float(sell_orders[0][2])
 ask_qty  = float(sell_orders[0][1]) 
 print ("Lowest ask is for %0.5f MKR @ %0.5f ETH/MKR" % (ask_qty,ask))
 
-result = market_contract.call().buy(int(bid_id), web3rpc.toWei(0.01, 'Ether'))
-
 if bid >= ask:
   print("\nAction needed!")
   if bid_qty > ask_qty:
@@ -107,7 +105,10 @@ if bid >= ask:
         bid_id = int(bid_id)
         quantity = int(0.2*precision)
         print("Sell: [%i] %i MKR" % (bid_id, quantity))
-        result = market_contract.call().buy(bid_id, quantity)
-        print("%s" % result)
+        try:
+          result = market_contract.call().buy(bid_id, quantity)
+          print("%s" % result)
+        except BadFunctionCallOutput:
+          print("Contract appears to have thrown an exception.", file=sys.stderr)
 else:
  print ("All is well")
