@@ -16,7 +16,7 @@ web3rpc.eth.defaultAccount = "0x6E39564ecFD4B5b0bA36CD944a46bCA6063cACE5"
 web3rpc.eth.defaultBlock = "latest"
 # Can also be an integer or one of "latest", "pending", "earliest"
 
-with open('market.abi', 'r') as abi_file:
+with open('simple_market.abi', 'r') as abi_file:
   abi_json = abi_file.read().replace('\n','')
 abi = json.loads(abi_json)
 market_contract = web3rpc.eth.contract(abi, address="0xa1B5eEdc73a978d181d1eA322ba20f0474Bb2A25")
